@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style type="text/css">
+        #content {
+            height: 330px;
+        }
+        /* 默认样式 */
+        .g-content-box ul, .g-dete-header-ul {
+            padding: 0;
+        }
+        .g-dete-header-ul li {
+            height: 40px;
+            line-height: 40px;
+        }
+        .g-content-box ul li,.g-dete-header-ul li{
+            float: left;
+            height: 52px;
+            list-style: none;
+            text-align: center;
+            color: #C9C9C9;
+            width: 14%;
+            -webkit-tap-highlight-color: rgba(0,0,0,0);
+        }
+        .g-content-box ul li span{
+            width: 34px;
+            /* margin: 5px; */
+            height: 34px;
+            display: inline-block;
+            border-radius: 100%;
+            line-height: 34px;
+            cursor: pointer;
+            box-sizing: border-box;
+            background: #f2f2f2;
+        }
+        /*可操作区域样式 */
+    
+        /* 灰色区域样式 */
+        .g-date-body-ul .g-calendar-grey {
+            color: #8D91A2;
+        }
+    
+    
+        /* 可自定义样式 */
+        .cus-style li {
+            /* border:1px solid #000; */
+        }
+        /* 默认激活样式 */
+        .g-date-body-ul .defalutActive{
+            color:#fff;
+            background: #6ed362;
+        }
+        /* 激活样式 */
+        .g-date-body-ul .active{
+            color: #fff;
+            background: #5079EE;
+            border: 0;
+            border-radius: 0;
+        }
+        /* 标记样式 */
+        .g-date-body-ul .g-mark-waiting {
+            color: #202020;
+            background: #ffffff;
+            border: 1px solid #626262;
+        }
+        .g-date-body-ul .g-mark-sending {
+            color: #009800;
+            background: #ffffff;
+            border: 1px solid #009800;
+        }
+        .g-date-body-ul .g-mark-notsend {
+            color: #fff;
+            background: red;
+        }
+        .g-date-body-ul .g-mark-completed {
+            color: #fff;
+            background: #009800;
+        }
+        .g-date-body-ul .g-mark-text {
+            font-size: 12px;
+            display: block;
+        }
+        /* 标记样式 */
+        /* .date li{
+            cursor: pointer;
+        }
+        .date-content .active {
+            border-radius:0;
+            color: #fff;
+            background: #5079EE;
+            border: 0;
+        } */
+    </style>
+</head>
+
+
+<body>
+    <div class="content">
+        <div class="calendar-title">
+            <button onclick="to(1)" data-stamp="" id="calendarTitleLeft">上一月</button>
+            <span id="curDate" class="calendarTitleCenter"></span>
+            <button onclick="to(2)" data-stamp="" id="calendarTitleRight">下一月</button>
+        </div>
+        <div id="content"></div>
+    </div>
+
+    <script src="date.js"></script>
+    <script>
+        var markStatus = {
+            0: '非配送日',
+            1: '待配送',
+            2: '配送中',
+            3: '不配送',
+            4: '已完成'
+        };
+        var markData = [{
+            status: 1,
+            date: '2019-06-14'
+        },
+        {
+            status: 3,
+            date: '2019-06-20'
+        },
+        {
+            status: 3,
+            date: '2019-06-27'
+        },
+        {
+            status: 2,
+            date: '2019-06-21'
+        },
+        {
+            status: 4,
+            date: '2019-06-17'
+        }]
+        var option = {
+            activateClass: 'active',
+            cusClass: 'cus-style',
+            content: document.getElementById('content'),
+            data: ['2019-6-14', '2019-6-19', '2019-6-4'],
+            markData: markData,
+            markStyle: {
+                0: 'g-mark-defalut',
+                1: 'g-mark-waiting',
+                2: 'g-mark-sending',
+                3: 'g-mark-notsend',
+                4: 'g-mark-completed'
+            },
+            markStatus: markStatus,
+            weekTitle: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+            defalutActive: 'defalutActive'
+        };
+        var calendar = new Calendar(option, function (type, event) {
+            // type 1 当前日期 2当前选中日期dom
+            if (type == 1) {
+                document.getElementById('curDate').innerHTML = event.curDateText;
+
+                var curDate = new Date(getDateDiff(event.curDateText));
+                var curYear = curDate.getFullYear();
+                var curMonth = curDate.getMonth();
+                
+                var preMonthDate = new Date(curYear,curMonth-1).getTime();
+                var netMonthStemp = new Date(curYear, curMonth+1).getTime();
+                document.getElementById('calendarTitleLeft').setAttribute("data-stamp", preMonthDate);
+                document.getElementById('calendarTitleRight').setAttribute("data-stamp", netMonthStemp);
+            } else {
+                // console.log(event);
+            }
+        });
+        calendar.init();
+        function to(num) {
+            var stamp = null;
+            if (num == 1) {
+                stamp = document.getElementById('calendarTitleLeft').getAttribute("data-stamp");
+            } else if (num == 2) {
+                stamp = document.getElementById('calendarTitleRight').getAttribute("data-stamp");
+            }
+            calendar.changeMonth(stamp);
+        }
+        function getDateDiff(time) {
+            //将xxxx-xx-xx的时间格式，转换为 xxxx/xx/xx的格式 
+            return time.replace(/\-/g, "/");
+        };
+        
+    </script>
+</body>
+
+</html>
