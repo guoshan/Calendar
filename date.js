@@ -17,10 +17,6 @@ function Calendar(option, callback) {
     this.isShowNeighbor = option.isShowNeighbor || false;
     //需要标记的数组列表
     this.markData = option.markData;
-    //需要标记的样式对象
-    this.markStyle = option.markStyle;
-    //需要标记样式的文本
-    this.markStatus = option.markStatus;
     // 默认激活样式
     this.defalutActive = option.defalutActive;
     //日历渲染完成callback
@@ -35,8 +31,10 @@ Calendar.prototype = {
         var date = new Date();
         var year = date.getFullYear();
         var month = date.getMonth() + 1;
-        // 初始化周期
+        //初始化头部
         this.initHeader();
+        // 初始化周期
+        this.initWeekTitle();
         // 初始化日期
         this.initBody(year, month);
         // 挂在监听事件
@@ -50,8 +48,11 @@ Calendar.prototype = {
         dateArr[1] = targetDate.getMonth() + 1;
         this.initBody(dateArr[0], dateArr[1]);
     },
+    initHeader() {
+        
+    },
     //初始化星期头
-    initHeader: function () {
+    initWeekTitle: function () {
         var html = "";
         var ol = document.createElement('ul');
         ol.className = "g-dete-header-ul"

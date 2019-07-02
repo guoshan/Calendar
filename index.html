@@ -5,12 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Calendar</title>
     <style type="text/css">
         body {
             background: #f7f7f7;
         }
-        .content {
+        .calendar-container {
             margin: 2px;
             background: #fff;
         }
@@ -18,7 +18,7 @@
             height: 330px;
         }
         /* 默认样式 */
-        .calendar-title {
+        .calendar-header {
             display: flex;
             padding-top: 10px;
         }
@@ -33,7 +33,7 @@
         .next-month {
             text-align: right;
         }
-        .calendar-title-center {
+        .calendar-header-center {
             color: #42436A;
             font-size: 16px;
         }
@@ -125,10 +125,10 @@
 
 
 <body>
-    <div class="content">
-        <div class="calendar-title">
+    <div class="calendar-container" id="calendarContainer">
+        <div class="calendar-header">
             <button onclick="to(1)" data-stamp="" id="calendarTitleLeft" class="pre-month">上一月</button>
-            <div id="curDate" class="calendar-title-center"></div>
+            <div id="curDate" class="calendar-header-center"></div>
             <button onclick="to(2)" data-stamp="" id="calendarTitleRight" class="next-month">下一月</button>
         </div>
         <div id="content"></div>
@@ -202,14 +202,6 @@
             content: document.getElementById('content'),
             data: ['2019-7-14', '2019-6-19', '2019-6-4'],
             markData: markData1,
-            markStyle: {
-                0: 'g-mark-defalut',
-                1: 'g-mark-time-conflict',
-                2: 'g-mark-sending',
-                3: 'g-mark-notsend',
-                4: 'g-mark-completed'
-            },
-            markStatus: markStatus,
             // weekTitle: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
             defalutActive: 'defalutActive'
         };
