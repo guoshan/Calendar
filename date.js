@@ -1,4 +1,4 @@
-function Calendar(option, callBack) {
+function Calendar(option, callback) {
     // 日历激活样式重置
     this.activateClass = option.activateClass;
     // 保存当前日期用于下次翻月
@@ -13,6 +13,8 @@ function Calendar(option, callBack) {
     this.content = option.content;
     // 默认选中数据
     this.data = option.data;
+    //是否显示邻居月份
+    this.isShowNeighbor = option.isShowNeighbor || false;
     //需要标记的数组列表
     this.markData = option.markData;
     //需要标记的样式对象
@@ -21,7 +23,12 @@ function Calendar(option, callBack) {
     this.markStatus = option.markStatus;
     // 默认激活样式
     this.defalutActive = option.defalutActive;
-    this.callBack = callBack;
+    //日历渲染完成callback
+    this.renderedCallback = callback;
+    //点击单个日期后的callback
+    this.clickDayCallback = option.clickDayCallback;
+    //切换月份的回调
+    this.changeMonthCallback = option.changeMonthCallback;
 }
 Calendar.prototype = {
     init: function () {
@@ -75,41 +82,50 @@ Calendar.prototype = {
         ol.className = 'g-date-body-ul ' + this.cusClass;
         // 上一个月的灰色区域
         for (var i = 0; i < currentFristDayWeek; i++) {
-            html.push(['<li class="g-calendar-grey g-prev"><span class="g-prev">',(last_date - (currentFristDayWeek - 1) + i),'</span></li>'].join(""));
+            if (this.isShowNeighbor) {
+                var preCurDay = (last_date - (currentFristDayWeek - 1) + i);
+                var preTimeStamp = this.getTargetTimeStamp(curYear, curMonth - 1, preCurDay);
+                html.push(['<li class="g-calendar-grey g-prev"><span class="g-prev" data-stamp="', preTimeStamp ,'">', preCurDay ,'</span></li>'].join(""));
+            } else {
+                html.push(['<li class="g-calendar-grey"><span></span></li>'].join(""));
+            }
         }
         // 当前月
         for (var j = 0; j < currentLastDay; j++) {
             var time = this.getTargetTimeStamp(curYear, curMonth, j+1);
-            var attrObj = this.getTargetTimeAttr(curYear, curMonth, j+1);
-            var itemMarkStyle = this.markStyle[attrObj.status] || '';
+            var markObj = this.markData[time] || {};
             html.push(['<li><span class="',
-                itemMarkStyle,
-                attrObj.isSelectable?' g-selectable':'',
-            '" data-date=',
+                markObj.style,
+                markObj.isDisabled?'':' g-selectable',
+            '" data-stamp=',
                 time,
             ' data-status="',
-                attrObj.status,
+                markObj.status,
             '">',
                 (j + 1),
             '</span>',
-                attrObj.isShowTips?`<a class="g-mark-text">${this.markStatus[attrObj.status]}</a>`:'',
             '</li>'].join(""));
         }
          // 下一个月灰色区域
-        // if(surplus < 14 && surplus >= 7) {
-        //     surplus = surplus -7;
-        // } else if (surplus == 14) {
-        //     surplus = 0;
-        // }
+        if(surplus < 14 && surplus >= 7) {
+            surplus = surplus - 7;
+        } else if (surplus == 14) {
+            surplus = 0;
+        }
         for (var k = 0; k < surplus; k++) {
-            html.push(['<li class="g-calendar-grey g-next"><span class="g-next">', (k + 1) ,'</span></li>'].join(" "));
+            if (this.isShowNeighbor) {
+                var nextTimeStamp = this.getTargetTimeStamp(curYear, curMonth + 1, k+1);
+                html.push(['<li class="g-calendar-grey g-next"><span class="g-next" data-stamp="', nextTimeStamp ,'">', (k + 1) ,'</span></li>'].join(" "));
+            } else {
+                html.push(['<li class="g-calendar-grey"><span></span></li>'].join(" "));
+            }
         }
         ol.innerHTML = html.join("");
         this.dateContent.className = "g-content-box";
         this.dateContent.innerHTML = "";
         this.dateContent.appendChild(ol);
         this.content.appendChild(this.dateContent);
-        this.callBack(1, {curDateText: curYear + '-' + curMonth});
+        this.renderedCallback(1, {curDateText: curYear + '-' + curMonth});
         // this.setDefaultActivate();
     },
     addEventListener: function () {
@@ -117,25 +133,28 @@ Calendar.prototype = {
         this.dateContent.addEventListener('click', function (e) {
             //js取事件元兼容问题？
             var event = e.target;
+            console.error(event);
             if (event.tagName != 'SPAN') {
                 event = event.firstChild
             }
             var className = event.className;
+            var stamp = event.getAttribute("data-stamp");
             if (/g-prev/i.test(className)) {
-                // _this.changeMonth(1);
+                _this.changeMonth(stamp);
             } else if (/g-next/i.test(className)) {
-                // _this.changeMonth(2);
+                _this.changeMonth(stamp);
             } else if (/g-selectable/.test(className)) {
                 var regx = new RegExp(_this.activateClass, 'g');
                 _this.removeClassName();
+                event.className = _this.activateClass + ' ' + event.className;
                 if (!regx.test(className)) {
-                    event.className = _this.activateClass + ' ' + event.className;
+                    this.clickDayCallback && this.clickDayCallback();
                 }
             } else {
                 // _this.removeClassName();
                 // event.className = _this.activateClass + ' ' + event.className;
                 // // event = {curDateText: curYear + '-' + curMonth}
-                // _this.callBack(2, event);
+                // _this.renderedCallback(2, event);
             }
         })
     },
@@ -170,57 +189,5 @@ Calendar.prototype = {
     getTargetTimeStamp(year, month, day) {
         var tagDate = new Date(year, month-1, day);
         return tagDate.getTime();
-    },
-    /**
-     * 获取日期需要缓存的attr
-     * @param {*} year 
-     * @param {*} month 
-     * @param {*} day 
-     */
-    getTargetTimeAttr(year, month, day) {
-        var markData = this.markData;
-        // console.error(markData);
-        var attrObj = {};
-        if (markData && markData.length > 1) {
-            for (var i = 0; i < markData.length; i++) {
-                var markTime = new Date(markData[i].date.replace(/\-/g, "/"));
-                var markYear = markTime.getFullYear();
-                var markMonth = markTime.getMonth()+1;
-                var markDay = markTime.getDate();
-                if (markYear == year && markMonth == month && markDay == day) {
-                    attrObj.status = markData[i].status;
-                    var firstAppearTime = this.getFirstAppearTime(markData, attrObj.status);
-                    if (firstAppearTime && firstAppearTime.year == year && firstAppearTime.month == month && firstAppearTime.day == day) {
-                        attrObj.isShowTips = true;
-                    }
-                    if (attrObj.status == 1 || attrObj.status == 2 || attrObj.status == 3) {
-                        attrObj.isSelectable = true;
-                    }
-                    break;
-                }
-            }
-        }
-        return attrObj;
-    },
-    /**
-     * 获取元素第一次出现的日期
-     * @param {*} data 
-     * @param {*} status 
-     */
-    getFirstAppearTime(data, status) {
-        if (data.length > 1) {
-            for (var i = 0; i < data.length; i++) {
-                if (data[i].status == status) {
-                    var tDate = new Date(data[i].date.replace(/\-/g, "/"));
-                    return {
-                        date: tDate,
-                        year: tDate.getFullYear(),
-                        month: tDate.getMonth()+1,
-                        day: tDate.getDate()
-                    };
-                }
-            }
-        }
-       return -1;
     }
 }

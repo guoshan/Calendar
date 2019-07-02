@@ -17,32 +17,33 @@
         .g-dete-header-ul li {
             height: 40px;
             line-height: 40px;
+            color: #42436a;
+        }
+        .g-content-box ul li {
+            color: #c6c8d0;;
         }
         .g-content-box ul li,.g-dete-header-ul li{
             float: left;
-            height: 52px;
+            height: 40px;
             list-style: none;
             text-align: center;
-            color: #C9C9C9;
             width: 14%;
             -webkit-tap-highlight-color: rgba(0,0,0,0);
         }
         .g-content-box ul li span{
             width: 34px;
-            /* margin: 5px; */
             height: 34px;
             display: inline-block;
             border-radius: 100%;
             line-height: 34px;
             cursor: pointer;
             box-sizing: border-box;
-            background: #f2f2f2;
         }
         /*可操作区域样式 */
     
         /* 灰色区域样式 */
         .g-date-body-ul .g-calendar-grey {
-            color: #8D91A2;
+            color: #C9C9C9;
         }
     
     
@@ -57,33 +58,29 @@
         }
         /* 激活样式 */
         .g-date-body-ul .active{
-            color: #fff;
-            background: #5079EE;
+            background: #F2F2F2 !important;
             border: 0;
-            border-radius: 0;
+            border-radius: 100%;
+            /* box-shadow: 1px 2px 4px #d6d6d6; */
         }
         /* 标记样式 */
-        .g-date-body-ul .g-mark-waiting {
-            color: #202020;
-            background: #ffffff;
-            border: 1px solid #626262;
+        .g-date-body-ul .g-mark-time-conflict {
+            color: #ffa63b;
         }
         .g-date-body-ul .g-mark-sending {
-            color: #009800;
-            background: #ffffff;
-            border: 1px solid #009800;
+            color: #8833f3;
         }
         .g-date-body-ul .g-mark-notsend {
-            color: #fff;
-            background: red;
+            color: #ff0014;
         }
         .g-date-body-ul .g-mark-completed {
-            color: #fff;
-            background: #009800;
+            color: #46be0a;
         }
         .g-date-body-ul .g-mark-text {
-            font-size: 12px;
+            font-size: 10px;
             display: block;
+            -webkit-text-size-adjust: none;
+            -webkit-transform: scale(0.66,0.66);
         }
         /* 标记样式 */
         /* .date li{
@@ -113,46 +110,79 @@
     <script>
         var markStatus = {
             0: '非配送日',
-            1: '待配送',
-            2: '配送中',
+            1: '时间冲突',
+            2: '进行中',
             3: '不配送',
             4: '已完成'
         };
+        var markStyle = {
+            0: 'g-mark-defalut',
+            1: 'g-mark-time-conflict',
+            2: 'g-mark-sending',
+            3: 'g-mark-notsend',
+            4: 'g-mark-completed'
+        };
         var markData = [{
             status: 1,
-            date: '2019-06-14'
+            date: '2019-07-14'
         },
         {
             status: 3,
-            date: '2019-06-20'
+            date: '2019-07-20'
         },
         {
             status: 3,
-            date: '2019-06-27'
+            date: '2019-07-27'
         },
         {
             status: 2,
-            date: '2019-06-21'
+            date: '2019-07-21'
         },
         {
             status: 4,
-            date: '2019-06-17'
+            date: '2019-07-17'
         }]
+        var markData1 = {
+            "1563033600000": {
+                status: 1,
+                style: 'g-mark-time-conflict',
+                text: '时间冲突'
+            },
+            "1563552000000": {
+                status: 3,
+                style: 'g-mark-notsend',
+                text: '不配送'
+            },
+            "1564156800000": {
+                status: 3,
+                style: 'g-mark-notsend'
+            },
+            "1563638400000": {
+                status: 2,
+                style: 'g-mark-sending',
+                text: '进行中'
+            },
+            "1563292800000": {
+                status: 4,
+                style: 'g-mark-completed',
+                text: '已完成'
+            }
+        }
         var option = {
             activateClass: 'active',
             cusClass: 'cus-style',
             content: document.getElementById('content'),
-            data: ['2019-6-14', '2019-6-19', '2019-6-4'],
-            markData: markData,
+            data: ['2019-7-14', '2019-6-19', '2019-6-4'],
+            markData: markData1,
             markStyle: {
                 0: 'g-mark-defalut',
-                1: 'g-mark-waiting',
+                1: 'g-mark-time-conflict',
                 2: 'g-mark-sending',
                 3: 'g-mark-notsend',
                 4: 'g-mark-completed'
             },
             markStatus: markStatus,
-            weekTitle: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+            // weekTitle: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
             defalutActive: 'defalutActive'
         };
         var calendar = new Calendar(option, function (type, event) {
