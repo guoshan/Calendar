@@ -7,12 +7,40 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style type="text/css">
+        body {
+            background: #f7f7f7;
+        }
+        .content {
+            margin: 2px;
+            background: #fff;
+        }
         #content {
             height: 330px;
         }
         /* 默认样式 */
+        .calendar-title {
+            display: flex;
+            padding-top: 10px;
+        }
+        .pre-month, .next-month {
+            color: #8D91A2;
+            flex: 1;
+            font-size: 14px;
+        }
+        .pre-month {
+            text-align: left;
+        }
+        .next-month {
+            text-align: right;
+        }
+        .calendar-title-center {
+            color: #42436A;
+            font-size: 16px;
+        }
         .g-content-box ul, .g-dete-header-ul {
             padding: 0;
+            overflow: hidden;
+            margin: 12px 0;
         }
         .g-dete-header-ul li {
             height: 40px;
@@ -99,9 +127,9 @@
 <body>
     <div class="content">
         <div class="calendar-title">
-            <button onclick="to(1)" data-stamp="" id="calendarTitleLeft">上一月</button>
-            <span id="curDate" class="calendarTitleCenter"></span>
-            <button onclick="to(2)" data-stamp="" id="calendarTitleRight">下一月</button>
+            <button onclick="to(1)" data-stamp="" id="calendarTitleLeft" class="pre-month">上一月</button>
+            <div id="curDate" class="calendar-title-center"></div>
+            <button onclick="to(2)" data-stamp="" id="calendarTitleRight" class="next-month">下一月</button>
         </div>
         <div id="content"></div>
     </div>
