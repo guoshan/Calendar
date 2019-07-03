@@ -48,9 +48,13 @@ Calendar.prototype = {
         // 挂在监听事件
         this.addEventListener();
     },
-    // 点击跳到上一月或者下一月或者指定年月
-    changeMonth(timeStamp, curThis) {
-        var _this = curThis;
+    /**
+     * 跳到指定年月
+     * @param {*} timeStamp 时间戳
+     * @param {*} calThis calendar的 this
+     */
+    changeMonth(timeStamp, calThis) {
+        var _this = calThis;
         var dateArr = _this.saveTime;
         console.error('点击日历头：', typeof timeStamp);
         var targetDate = new Date(parseInt(timeStamp));
@@ -65,7 +69,6 @@ Calendar.prototype = {
         } else {
             _this.initBody(dateArr[0], dateArr[1]);
         }
-        
     },
     /**
      * 初始化日历头部
@@ -85,7 +88,9 @@ Calendar.prototype = {
         this.setHeaderBtnStamp(year, month);
         
     },
-    //初始化星期头
+    /**
+     * 初始化星期头
+     */
     initWeekTitle: function () {
         var calBody       = document.createElement('div');
         calBody.className = 'calendar-body';
@@ -100,7 +105,11 @@ Calendar.prototype = {
         calBody.innerHTML = html.join("");
         this.container.appendChild(calBody);
     },
-    //初始化日历
+    /**
+     * 初始化日历body
+     * @param {*} curYear 
+     * @param {*} curMonth 
+     */
     initBody: function (curYear, curMonth) {
         if (!curYear) {
             curYear = this.saveTime[0];
@@ -172,6 +181,9 @@ Calendar.prototype = {
             this.setDefaultActivate();
         }
     },
+    /**
+     * 添加事件监听
+     */
     addEventListener: function () {
         var _this = this;
         this.dateContent.addEventListener('click', function (e) {
@@ -220,6 +232,9 @@ Calendar.prototype = {
 
         });
     },
+    /**
+     * 移除所有某个className
+     */
     removeClassName: function () {
         var activateClassDom = document.querySelectorAll('.' + this.activateClass);
         var reg = new RegExp(this.activateClass + ' ', 'g');
@@ -277,13 +292,11 @@ Calendar.prototype = {
         }
         return tagDate.getTime();
     },
+    /**
+     * 将xxxx-xx-xx的时间格式，转换为 xxxx/xx/xx的格式
+     * @param {*} time 
+     */
     getDateDiff(time) {
-        //将xxxx-xx-xx的时间格式，转换为 xxxx/xx/xx的格式 
-        // var reg = /^\d+$/;
-        // if (reg.test(time)) {
-        //     console.error(time);
-        //     return parseInt(time);
-        // }
         return time.replace(/\-/g, "/");
     }
 }

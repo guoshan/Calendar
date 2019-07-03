@@ -125,15 +125,6 @@
             -webkit-transform: scale(0.66,0.66);
         }
         /* 标记样式 */
-        /* .date li{
-            cursor: pointer;
-        }
-        .date-content .active {
-            border-radius:0;
-            color: #fff;
-            background: #5079EE;
-            border: 0;
-        } */
     </style>
 </head>
 
@@ -216,9 +207,9 @@
                 console.error("切换月份回调");
                 callback && callback();
             },
-            clickHeaderCenter: function (callback, curThis) {
+            clickHeaderCenter: function (callback, calThis) {
                 var selectedStamp = "1564588800000";
-                callback && callback(selectedStamp, curThis);
+                callback && callback(selectedStamp, calThis);
             },
             defaultActiveDate: '2019-07-4',
 
@@ -229,19 +220,6 @@
             console.error("日历生成结束");
         });
         calendar.init();
-        // function to(num) {
-        //     var stamp = null;
-        //     if (num == 1) {
-        //         stamp = document.getElementById('calendarHeaderLeft').getAttribute("data-stamp");
-        //     } else if (num == 2) {
-        //         stamp = document.getElementById('calendarHeaderRight').getAttribute("data-stamp");
-        //     }
-        //     calendar.changeMonth(stamp);
-        // };
-        function getDateDiff(time) {
-            //将xxxx-xx-xx的时间格式，转换为 xxxx/xx/xx的格式 
-            return time.replace(/\-/g, "/");
-        };
         
     </script>
 </body>
