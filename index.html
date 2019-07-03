@@ -139,8 +139,7 @@
 
 
 <body>
-    <div class="calendar-container" id="calendarContainer">
-    </div>
+    <div class="calendar-container" id="calendarContainer"></div>
 
     <script src="date.js"></script>
     <script>
@@ -217,9 +216,13 @@
                 console.error("切换月份回调");
                 callback && callback();
             },
-            cusClass: 'cus-style',
-            data: ['2019-7-14', '2019-6-19', '2019-6-4'],
-            defalutActive: 'defalutActive'
+            clickHeaderCenter: function (callback, curThis) {
+                var selectedStamp = "1564588800000";
+                callback && callback(selectedStamp, curThis);
+            },
+            defaultActiveDate: '2019-07-4',
+
+            cusClass: 'cus-style'
         };
         var calendar = new Calendar(option, function (type, event) {
             // type 1 当前日期 2当前选中日期dom
