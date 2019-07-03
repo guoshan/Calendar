@@ -22,20 +22,34 @@
             display: flex;
             padding-top: 10px;
         }
-        .pre-month, .next-month {
+        .calendar-header-left, .calendar-header-right {
+            width: 72px;
             color: #8D91A2;
-            flex: 1;
             font-size: 14px;
         }
-        .pre-month {
+        .calendar-header-left {
             text-align: left;
         }
-        .next-month {
+        .calendar-header-right {
             text-align: right;
         }
         .calendar-header-center {
+            flex: 1;
+            text-align: center;
             color: #42436A;
             font-size: 16px;
+        }
+        .calendar-header-center span {
+            vertical-align: middle;
+        }
+        .calendar-header-center .angle-down {
+            width: 32px;
+            height: 32px;
+            display: inline-block;
+            background: url(angle-down.png) no-repeat;
+            background-position: center;
+            background-size: cover;
+            vertical-align: middle;
         }
         .g-content-box ul, .g-dete-header-ul {
             padding: 0;
@@ -126,12 +140,6 @@
 
 <body>
     <div class="calendar-container" id="calendarContainer">
-        <div class="calendar-header">
-            <button onclick="to(1)" data-stamp="" id="calendarTitleLeft" class="pre-month">上一月</button>
-            <div id="curDate" class="calendar-header-center"></div>
-            <button onclick="to(2)" data-stamp="" id="calendarTitleRight" class="next-month">下一月</button>
-        </div>
-        <div id="content"></div>
     </div>
 
     <script src="date.js"></script>
@@ -197,41 +205,36 @@
             }
         }
         var option = {
+            container: document.getElementById('calendarContainer'),
             activateClass: 'active',
-            cusClass: 'cus-style',
-            content: document.getElementById('content'),
-            data: ['2019-7-14', '2019-6-19', '2019-6-4'],
             markData: markData1,
             // weekTitle: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+            initDate: '2019-07-3',
+            clickDayCallback: function(){
+                console.error("点击了当前日期");
+            },
+            changeMonthCallback: function (callback) {
+                console.error("切换月份回调");
+                callback && callback();
+            },
+            cusClass: 'cus-style',
+            data: ['2019-7-14', '2019-6-19', '2019-6-4'],
             defalutActive: 'defalutActive'
         };
         var calendar = new Calendar(option, function (type, event) {
             // type 1 当前日期 2当前选中日期dom
-            if (type == 1) {
-                document.getElementById('curDate').innerHTML = event.curDateText;
-
-                var curDate = new Date(getDateDiff(event.curDateText));
-                var curYear = curDate.getFullYear();
-                var curMonth = curDate.getMonth();
-                
-                var preMonthDate = new Date(curYear,curMonth-1).getTime();
-                var netMonthStemp = new Date(curYear, curMonth+1).getTime();
-                document.getElementById('calendarTitleLeft').setAttribute("data-stamp", preMonthDate);
-                document.getElementById('calendarTitleRight').setAttribute("data-stamp", netMonthStemp);
-            } else {
-                // console.log(event);
-            }
+            console.error("日历生成结束");
         });
         calendar.init();
-        function to(num) {
-            var stamp = null;
-            if (num == 1) {
-                stamp = document.getElementById('calendarTitleLeft').getAttribute("data-stamp");
-            } else if (num == 2) {
-                stamp = document.getElementById('calendarTitleRight').getAttribute("data-stamp");
-            }
-            calendar.changeMonth(stamp);
-        }
+        // function to(num) {
+        //     var stamp = null;
+        //     if (num == 1) {
+        //         stamp = document.getElementById('calendarHeaderLeft').getAttribute("data-stamp");
+        //     } else if (num == 2) {
+        //         stamp = document.getElementById('calendarHeaderRight').getAttribute("data-stamp");
+        //     }
+        //     calendar.changeMonth(stamp);
+        // };
         function getDateDiff(time) {
             //将xxxx-xx-xx的时间格式，转换为 xxxx/xx/xx的格式 
             return time.replace(/\-/g, "/");
