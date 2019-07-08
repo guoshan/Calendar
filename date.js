@@ -53,19 +53,16 @@ Calendar.prototype = {
      * @param {*} timeStamp 时间戳
      * @param {*} calThis calendar的 this
      */
-    changeMonth(timeStamp, calThis) {
-        var _this = calThis;
+    changeMonth(timeStamp) {
+        var _this = this;
         var dateArr = _this.saveTime;
         console.error('点击日历头：', typeof timeStamp);
         var targetDate = new Date(parseInt(timeStamp));
         console.error('点击日历头：', dateArr);
         dateArr[0] = targetDate.getFullYear();
         dateArr[1] = targetDate.getMonth() + 1;
-        if (this.changeMonthCallback) {
-            this.changeMonthCallback(function (markData) {
-                _this.markData = markData || [];
-                _this.initBody(dateArr[0], dateArr[1]);
-            });
+        if (_this.changeMonthCallback) {
+            _this.changeMonthCallback(dateArr[0], dateArr[1]);
         } else {
             _this.initBody(dateArr[0], dateArr[1]);
         }
@@ -196,9 +193,9 @@ Calendar.prototype = {
             var className = event.className;
             var stamp = event.getAttribute("data-stamp");
             if (/g-prev/i.test(className)) {
-                _this.changeMonth(stamp, _this);
+                _this.changeMonth(stamp);
             } else if (/g-next/i.test(className)) {
-                _this.changeMonth(stamp, _this);
+                _this.changeMonth(stamp);
             } else if (/g-selectable/.test(className)) {
                 var regx = new RegExp(_this.activateClass, 'g');
                 console.error('默认选中的日期11：'+stamp);
@@ -218,12 +215,12 @@ Calendar.prototype = {
         document.getElementById("calendarHeaderLeft").addEventListener('click', function (e) {
             var event = e.target;
             var stamp = event.getAttribute("data-stamp");
-            _this.changeMonth(stamp, _this);
+            _this.changeMonth(stamp);
         });
         document.getElementById("calendarHeaderRight").addEventListener('click', function (e) {
             var event = e.target;
             var stamp = event.getAttribute("data-stamp");
-            _this.changeMonth(stamp, _this);
+            _this.changeMonth(stamp);
         });;
         document.getElementById("calendarHeaderCenter").addEventListener('click', function (e) {
             var event = e.target.firstChild;

@@ -29,9 +29,11 @@
         }
         .calendar-header-left {
             text-align: left;
+            padding-left: 10px;
         }
         .calendar-header-right {
             text-align: right;
+            padding-right: 10px;
         }
         .calendar-header-center {
             flex: 1;
@@ -203,10 +205,7 @@
             clickDayCallback: function(){
                 console.error("点击了当前日期");
             },
-            changeMonthCallback: function (callback) {
-                console.error("切换月份回调");
-                callback && callback();
-            },
+            changeMonthCallback: changeMonthCallback,
             clickHeaderCenter: function (callback, calThis) {
                 var selectedStamp = "1564588800000";
                 callback && callback(selectedStamp, calThis);
@@ -215,12 +214,16 @@
 
             cusClass: 'cus-style'
         };
-        var calendar = new Calendar(option, function (type, event) {
+        var Calendar = new Calendar(option, function (type, event) {
             // type 1 当前日期 2当前选中日期dom
             console.error("日历生成结束");
         });
-        calendar.init();
-        
+        Calendar.init();
+        function changeMonthCallback (targetYear, targetMonth) {
+            var markDataTest = [];
+            Calendar.markData = markDataTest;
+            Calendar.initBody(targetYear, targetMonth);
+        }
     </script>
 </body>
 
