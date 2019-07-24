@@ -9,8 +9,10 @@ function Calendar(option, callback) {
     this.cusClass            = option.cusClass;
     // 生成挂在日历的虚拟dom元素
     this.dateContent         = document.createElement('div');
-    // 真实挂载区域
-    this.container           = option.container;
+    // 真实挂载区域domId
+    this.containerDomId      = option.containerDomId;
+    //日历真实挂载区域
+    this.container           = null;
     // 默认选中日期
     this.defaultActiveDate   = option.defaultActiveDate;
     
@@ -38,6 +40,7 @@ Calendar.prototype = {
         }
         var year  = date.getFullYear();
         var month = date.getMonth() + 1;
+        this.container = document.getElementById(this.containerDomId);
         //初始化头部
         this.initHeader(year, month);
         // 初始化周期
@@ -74,9 +77,9 @@ Calendar.prototype = {
         var calHeader       = document.createElement('div');
         calHeader.className = 'calendar-header';
 
-        html.push(['<div data-stamp="" id="calendarHeaderLeft" class="calendar-header-left">上一月</div>',
-            '<div id="calendarHeaderCenter" class="calendar-header-center"><span id="curDate"></span><i class="angle-down"></i></div>',
-            '<div data-stamp="" id="calendarHeaderRight" class="calendar-header-right">下一月</div>'].join(""));
+        html.push(['<div data-stamp="" id="',this.containerDomId,'HeaderLeft" class="calendar-header-left">上一月</div>',
+            '<div id="',this.containerDomId,'HeaderCenter" class="calendar-header-center"><span id="',this.containerDomId,'CurDate"></span><i class="angle-down"></i></div>',
+            '<div data-stamp="" id="',this.containerDomId,'HeaderRight" class="calendar-header-right">下一月</div>'].join(""));
         calHeader.innerHTML = html.join('');
         this.container.appendChild(calHeader);
         this.setHeaderBtnStamp(year, month);
@@ -87,7 +90,7 @@ Calendar.prototype = {
     initWeekTitle: function () {
         var calBody       = document.createElement('div');
         calBody.className = 'calendar-body';
-        calBody.id        = 'calendarContainerBody';
+        calBody.id        = this.containerDomId + 'Body';
         var html    = [];
 
         html.push(['<ul class="g-dete-header-ul">'].join(""));
@@ -164,9 +167,9 @@ Calendar.prototype = {
         this.dateContent.className = "g-content-box";
         this.dateContent.innerHTML = "";
         this.dateContent.appendChild(ol);
-        document.getElementById("calendarContainerBody").appendChild(this.dateContent);
+        document.getElementById(this.containerDomId+'Body').appendChild(this.dateContent);
         this.setHeaderBtnStamp(curYear, curMonth);
-        document.getElementById('curDate').innerHTML = curYear + '-' + curMonth;
+        document.getElementById(this.containerDomId+'CurDate').innerHTML = curYear + '-' + curMonth;
 
         this.renderedCallback && this.renderedCallback(1, {curDateText: curYear + '-' + curMonth});
         if (this.defaultActiveDate) {
@@ -206,17 +209,17 @@ Calendar.prototype = {
                 // _this.renderedCallback(2, event);
             }
         });
-        document.getElementById("calendarHeaderLeft").addEventListener('click', function (e) {
+        document.getElementById(this.containerDomId+'HeaderLeft').addEventListener('click', function (e) {
             var event = e.target;
             var stamp = event.getAttribute("data-stamp");
             _this.changeMonth(stamp);
         });
-        document.getElementById("calendarHeaderRight").addEventListener('click', function (e) {
+        document.getElementById(this.containerDomId+'HeaderRight').addEventListener('click', function (e) {
             var event = e.target;
             var stamp = event.getAttribute("data-stamp");
             _this.changeMonth(stamp);
         });;
-        document.getElementById("calendarHeaderCenter").addEventListener('click', function (e) {
+        document.getElementById(this.containerDomId+'HeaderCenter').addEventListener('click', function (e) {
             var event = e.target.firstChild;
            _this.clickHeaderCenter && _this.clickHeaderCenter(_this.saveTime[0], _this.saveTime[1]);
 
@@ -240,8 +243,8 @@ Calendar.prototype = {
     setHeaderBtnStamp: function (year, month) {
         var preMonthStamp = this.getTargetTimeStamp(year, month-1);
         var nextMonthStemp = this.getTargetTimeStamp(year, month+1);
-        document.getElementById('calendarHeaderLeft').setAttribute("data-stamp", preMonthStamp);
-        document.getElementById('calendarHeaderRight').setAttribute("data-stamp", nextMonthStemp);
+        document.getElementById(this.containerDomId+'HeaderLeft').setAttribute("data-stamp", preMonthStamp);
+        document.getElementById(this.containerDomId+'HeaderRight').setAttribute("data-stamp", nextMonthStemp);
     },
     /**
      * 默认选中日期
@@ -290,6 +293,6 @@ Calendar.prototype = {
         return time.replace(/\-/g, "/");
     },
     setCurentDateText: function(dateStr) {
-        document.getElementById('curDate').innerHTML = dateStr;
+        document.getElementById(this.containerDomId+'CurDate').innerHTML = dateStr;
     }
 }
