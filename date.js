@@ -38,7 +38,6 @@ Calendar.prototype = {
         }
         var year  = date.getFullYear();
         var month = date.getMonth() + 1;
-        
         //初始化头部
         this.initHeader(year, month);
         // 初始化周期
@@ -53,12 +52,10 @@ Calendar.prototype = {
      * @param {*} timeStamp 时间戳
      * @param {*} calThis calendar的 this
      */
-    changeMonth(timeStamp) {
+    changeMonth: function(timeStamp) {
         var _this = this;
         var dateArr = _this.saveTime;
-        console.error('点击日历头：', typeof timeStamp);
         var targetDate = new Date(parseInt(timeStamp));
-        console.error('点击日历头：', dateArr);
         dateArr[0] = targetDate.getFullYear();
         dateArr[1] = targetDate.getMonth() + 1;
         if (_this.changeMonthCallback) {
@@ -72,18 +69,17 @@ Calendar.prototype = {
      * @param {*} year 
      * @param {*} month 
      */
-    initHeader(year, month) {
+    initHeader: function(year, month) {
         var html            = [];
         var calHeader       = document.createElement('div');
         calHeader.className = 'calendar-header';
 
-        html.push(['<button data-stamp="" id="calendarHeaderLeft" class="calendar-header-left">上一月</button>',
+        html.push(['<div data-stamp="" id="calendarHeaderLeft" class="calendar-header-left">上一月</div>',
             '<div id="calendarHeaderCenter" class="calendar-header-center"><span id="curDate"></span><i class="angle-down"></i></div>',
-            '<button data-stamp="" id="calendarHeaderRight" class="calendar-header-right">下一月</button>'].join(""));
+            '<div data-stamp="" id="calendarHeaderRight" class="calendar-header-right">下一月</div>'].join(""));
         calHeader.innerHTML = html.join('');
         this.container.appendChild(calHeader);
         this.setHeaderBtnStamp(year, month);
-        
     },
     /**
      * 初始化星期头
@@ -112,7 +108,6 @@ Calendar.prototype = {
             curYear = this.saveTime[0];
             curMonth = this.saveTime[1];
         }
-        console.error(curMonth);
         this.saveTime           = [curYear, curMonth];
         //获取当前前月的第一天是周几
         var currentFristDayWeek = new Date(curYear, curMonth - 1, 1).getDay();
@@ -186,7 +181,6 @@ Calendar.prototype = {
         this.dateContent.addEventListener('click', function (e) {
             //js取事件元兼容问题？
             var event = e.target;
-            console.error(event);
             if (event.tagName != 'SPAN') {
                 event = event.firstChild
             }
@@ -198,12 +192,12 @@ Calendar.prototype = {
                 _this.changeMonth(stamp);
             } else if (/g-selectable/.test(className)) {
                 var regx = new RegExp(_this.activateClass, 'g');
-                console.error('默认选中的日期11：'+stamp);
                 _this.defaultActiveDate = event.getAttribute("data-stamp");
                 _this.removeClassName();
                 event.className = _this.activateClass + ' ' + event.className;
                 if (!regx.test(className)) {
-                    _this.clickDayCallback && _this.clickDayCallback();
+                    var currentDayData = _this.markData[_this.defaultActiveDate] || null;
+                    _this.clickDayCallback && _this.clickDayCallback(currentDayData, _this.defaultActiveDate);
                 }
             } else {
                 // _this.removeClassName();
@@ -224,8 +218,7 @@ Calendar.prototype = {
         });;
         document.getElementById("calendarHeaderCenter").addEventListener('click', function (e) {
             var event = e.target.firstChild;
-            console.error('点击选择日期picker', e.target);
-           _this.clickHeaderCenter && _this.clickHeaderCenter(_this.changeMonth, _this);
+           _this.clickHeaderCenter && _this.clickHeaderCenter(_this.saveTime[0], _this.saveTime[1]);
 
         });
     },
@@ -253,7 +246,7 @@ Calendar.prototype = {
     /**
      * 默认选中日期
      */
-    setDefaultActivate() {
+    setDefaultActivate: function() {
         if (/^\d+$/.test(this.defaultActiveDate)) {
             var defaultDateStamp = this.defaultActiveDate;
         } else {
@@ -263,7 +256,6 @@ Calendar.prototype = {
             var day              = defaultDate.getDay();
             var defaultDateStamp = this.getTargetTimeStamp(year, month, day);
         }
-        console.error('默认选中的日期：'+defaultDateStamp);
         // 找到可点击元素
         var activateClassDom = document.querySelectorAll('.g-selectable');
         for (var i = 0; i < activateClassDom.length; i++) {
@@ -273,7 +265,8 @@ Calendar.prototype = {
                 break;
             }
         }
-        this.clickDayCallback && this.clickDayCallback(defaultDateStamp);
+        var currentDayData = this.markData[this.defaultActiveDate] || null;
+        this.clickDayCallback && this.clickDayCallback(currentDayData, defaultDateStamp);
     },
     /**
      * 获取日期的时间戳
@@ -281,7 +274,7 @@ Calendar.prototype = {
      * @param {*} month 
      * @param {*} day 
      */
-    getTargetTimeStamp(year, month, day) {
+    getTargetTimeStamp: function(year, month, day) {
         if (day) {
             var tagDate = new Date(year, month-1, day);
         } else {
@@ -293,7 +286,10 @@ Calendar.prototype = {
      * 将xxxx-xx-xx的时间格式，转换为 xxxx/xx/xx的格式
      * @param {*} time 
      */
-    getDateDiff(time) {
+    getDateDiff: function(time) {
         return time.replace(/\-/g, "/");
+    },
+    setCurentDateText: function(dateStr) {
+        document.getElementById('curDate').innerHTML = dateStr;
     }
 }
